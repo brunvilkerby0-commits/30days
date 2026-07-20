@@ -239,7 +239,6 @@
             document.getElementById('profit-display').innerText = `$${(inv.total_profit_30_days || 0).toFixed(2)}`;
             document.getElementById('etires-display').innerText = `$${(inv.gains_etires || 0).toFixed(2)}`;
         }
-
         // Chanje ant onglet yo
         window.switchTab = function(element, tabName) {
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
