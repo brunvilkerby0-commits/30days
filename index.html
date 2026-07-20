@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>30Days Mini App</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: #002A54;
+            color: #FFFFFF;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            padding: 20px;
+            padding-bottom: 90px;
+            text-align: center;
+        }
+        .header { margin-bottom: 20px; }
+        .username-title { font-size: 1.2rem; color: #FFFFFF; }
+        
+        /* Bwat Paj yo */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-bottom: 4px solid #CE1126;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        .balance-amount { font-size: 2.5rem; font-weight: bold; margin: 10px 0; }
+        .timer-box { font-size: 1.8rem; font-weight: bold; margin: 15px 0; color: #FFD700; font-family: monospace; }
+        
+        .btn-action {
+            background-color: #009639;
+            color: #FFFFFF;
+            border: none;
+            padding: 15px;
+            font-size: 1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .stats-container {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: left;
+        }
+        .stat-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .stat-row:last-child { border-bottom: none; }
+
+        /* Meni 3 Bouton anba a */
+        .navbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #001A35;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            border-top: 2px solid rgba(255, 255, 255, 0.2);
+            z-index: 1000;
+        }
+        .nav-item {
+            color: #A0B2C6;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1rem;
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+        .nav-item.active {
+            color: #FFFFFF;
+            background-color: #CE1126;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h3 class="username-title" id="user-display">Chargement...</h3>
+    </div>
+
+    <!-- ONGLET 1: STRUC -->
+    <div id="tab-struc" class="tab-content active">
+        <div class="card">
+            <div>Gains disponibles</div>
+            <div class="balance-amount" id="balance-display">$0.00</div>
+            <div class="timer-box" id="timer-display">24:00:00</div>
+            <button class="btn-action" onclick="claimGains()">Réclamer mes gains</button>
+        </div>
+
+        <div class="stats-container">
+            <div class="stat-row"><span>Taux Investi:</span><span id="taux-display">$0.00</span></div>
+            <div class="stat-row"><span>Total Profit (30j):</span><span id="profit-display">$0.00</span></div>
+            <div class="stat-row"><span>Gains Étirés:</span><span id="etires-display">$0.00</span></div>
+        </div>
+    </div>
+
+    <!-- ONGLET 2: PRO -->
+    <div id="tab-pro" class="tab-content">
+        <div class="card">
+            <h2>Espace Pro</h2>
+            <p style="margin-top: 10px; color: #A0B2C6;">Aksyon ak opsyon avanse pou kont ou.</p>
+        </div>
+    </div>
+
+    <!-- ONGLET 3: MORE -->
+    <div id="tab-more" class="tab-content">
+        <div class="card">
+            <h2>Plus d'options</h2>
+            <p style="margin-top: 10px; color: #A0B2C6;">Paramètres ak enfòmasyon sou sistèm 30Days la.</p>
+        </div>
+    </div>
+
+    <!-- MENI ANBA A AK 3 BOUTON YO -->
+    <div class="navbar">
+        <div class="nav-item active" onclick="switchTab('struc', this)">Struc</div>
+        <div class="nav-item" onclick="switchTab('pro', this)">Pro</div>
+        <div class="nav-item" onclick="switchTab('more', this)">More</div>
+    </div>
+
+    <!-- FIREBASE SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            databaseURL: "https://days-51e9b-default-rtdb.firebaseio.com"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        const user = tg.initDataUnsafe?.user || { id: "demo_id", username: "Utilisateur" };
+        const userId = user.id.toString();
+        const username = user.username || "Utilisateur";
+
+        document.getElementById('user-display').innerText = `@${username}`;
+
+        async function syncUser() {
+            const userRef = ref(db, `users/${userId}`);
+            try {
+                const snapshot = await get(userRef);
+                if (!snapshot.exists()) {
+                    const newUser = {
+                        profile: { username: username, telegram_id: userId },
+                        investment: { taux_investi: 0.00, balance_profi: 0.00, gains_etires: 0.00, total_profit_30_days: 0.00 }
+                    };
+                    await set(userRef, newUser);
+                    updateUI(newUser);
+                } else {
+                    updateUI(snapshot.val());
+                }
+            } catch (error) {
+                console.error("Erreur Firebase:", error);
+            }
+        }
+
+        function updateUI(userData) {
+            const inv = userData.investment || {};
+            document.getElementById('balance-display').innerText = `$${(inv.balance_profi || 0).toFixed(2)}`;
+            document.getElementById('taux-display').innerText = `$${(inv.taux_investi || 0).toFixed(2)}`;
+            document.getElementById('profit-display').innerText = `$${(inv.total_profit_30_days || 0).toFixed(2)}`;
+            document.getElementById('etires-display').innerText = `$${(inv.gains_etires || 0).toFixed(2)}`;
+        }
+
+        syncUser();
+    </script>
+
+    <script>
+        function switchTab(tabName, element) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById('tab-' + tabName).classList.add('active');
+            element.classList.add('active');
+        }
+
+        function claimGains() {
+            alert("Réclamation en cours...");
+        }
+    </script>
+</body>
+</html>
