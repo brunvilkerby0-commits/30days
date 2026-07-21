@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>30Days Investment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0e13;
+            color: #FFFFFF;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .container {
+            padding: 0;
+            padding-bottom: 100px;
+        }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(102, 255, 0, 0.2);
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-left .close {
+            color: #66FF00;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .header-center {
+            text-align: center;
+        }
+
+        .header-center h1 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-bottom: 2px;
+        }
+
+        .header-center p {
+            font-size: 0.75rem;
+            color: #A0A0A0;
+        }
+
+        .header-right {
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        /* PAGE */
+        .page {
+            display: none;
+            padding: 20px;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* HOME PAGE */
+        .welcome-section {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .welcome-text h2 {
+            font-size: 1.4rem;
+            color: #66FF00;
+            font-weight: 800;
+            margin-bottom: 2px;
+        }
+
+        .welcome-text p {
+            font-size: 0.85rem;
+            color: #66FF00;
+        }
+
+        .welcome-icons {
+            display: flex;
+            gap: 12px;
+            font-size: 1.5rem;
+        }
+
+        /* BALANCE CARD */
+        .balance-card {
+            background: linear-gradient(135deg, #66FF00 0%, #00D9FF 100%);
+            border-radius: 25px;
+            padding: 25px 20px;
+            margin-bottom: 20px;
+            color: #0a0e13;
+            max-width: 100%;
+        }
+
+        .balance-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            opacity: 0.8;
+            margin-bottom: 6px;
+            letter-spacing: 0.2px;
+        }
+
+        .balance-amount {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .roi-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.9);
+            color: #0a0e13;
+            padding: 6px 14px;
+            border-radius: 18px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .coin-balance {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            letter-spacing: -0.3px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            background: rgba(10, 14, 19, 0.4);
+            border-radius: 12px;
+            padding: 12px;
+        }
+
+        .action-btn {
+            flex: 1;
+            background: rgba(10, 14, 19, 0.6);
+            border: none;
+            color: #0a0e13;
+            padding: 10px 8px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .action-icon {
+            font-size: 1.1rem;
+        }
+
+        .summary-box {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            gap: 18px;
+        }
+
+        .summary-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .summary-value {
+            font-weight: 700;
+            font-size: 0.88rem;
+            margin-bottom: 2px;
+            letter-spacing: -0.3px;
+        }
+
+        .summary-label {
+            font-size: 0.65rem;
+            opacity: 0.8;
+            letter-spacing: -0.2px;
+        }
+
+        /* STOCKS SECTION */
+        .stocks-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0 12px 0;
+        }
+
+        .stocks-header h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+        }
+
+        .market-cap-btn {
+            background: transparent;
+            border: 1px solid #66FF00;
+            color: #66FF00;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .view-all {
+            color: #66FF00;
+            font-size: 0.8rem;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .stock-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(102, 255, 0, 0.1);
+        }
+
+        .stock-item:last-child {
+            border-bottom: none;
+        }
+
+        .stock-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .stock-icon {
+            font-size: 1.6rem;
+            width: 35px;
+            text-align: center;
+        }
+
+        .stock-details h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+            letter-spacing: -0.2px;
+        }
+
+        .stock-details p {
+            font-size: 0.7rem;
+            color: #A0A0A0;
+            letter-spacing: -0.1px;
+        }
+
+        .stock-chart {
+            width: 50px;
+            height: 25px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 40"><polyline points="0,30 20,15 40,20 60,10 80,25 100,5" fill="none" stroke="orange" stroke-width="2"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .stock-price {
+            text-align: right;
+            min-width: 80px;
+        }
+
+        .stock-value {
+            font-weight: 700;
+            font-size: 0.88rem;
+            margin-bottom: 2px;
+            letter-spacing: -0.3px;
+        }
+
+        .stock-change {
+            font-size: 0.7rem;
+            color: #FF6B6B;
+            letter-spacing: -0.2px;
+        }
+
+        /* PRODUCTS PAGE */
+        .tabs-header {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(102, 255, 0, 0.1);
+        }
+
+        .tab {
+            padding: 12px 0;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-weight: 600;
+            color: #A0A0A0;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: #66FF00;
+            border-bottom-color: #66FF00;
+        }
+
+        .product-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #FFFFFF;
+        }
+
+        .product-card {
+            background: rgba(26, 31, 46, 0.8);
+            border: 1px solid rgba(102, 255, 0, 0.2);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #66FF00 0%, #00D9FF 100%);
+        }
+
+        .product-status-dot {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            width: 8px;
+            height: 8px;
+            background: #66FF00;
+            border-radius: 50%;
+        }
+
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            padding-top: 5px;
+        }
+
+        .product-info {
+            display: flex;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .product-icon {
+            font-size: 2rem;
+        }
+
+        .product-details h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .product-details p {
+            font-size: 0.75rem;
+            color: #A0A0A0;
+        }
+
+        .product-badge {
+            background: rgba(102, 255, 0, 0.3);
+            color: #66FF00;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            border: 1px solid #66FF00;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            padding: 15px 0;
+            border-top: 1px solid rgba(102, 255, 0, 0.1);
+            border-bottom: 1px solid rgba(102, 255, 0, 0.1);
+            margin-bottom: 15px;
+        }
+
+        .stat-cell {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: #A0A0A0;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1rem;
+            font-weight: 800;
+            color: #FFFFFF;
+        }
+
+        .stat-value.amount {
+            color: #FFA500;
+        }
+
+        .stat-value.profit {
+            color: #66FF00;
+        }
+
+        .date-range {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #A0A0A0;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(102, 255, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #66FF00 0%, #00D9FF 100%);
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .progress-dot {
+            position: absolute;
+            right: 0;
+            top: -5px;
+            width: 16px;
+            height: 16px;
+            background: #66FF00;
+            border-radius: 50%;
+            border: 2px solid #0a0e13;
+            box-shadow: 0 0 8px rgba(102, 255, 0, 0.6);
+        }
+
+        .profit-box {
+            background: rgba(102, 255, 0, 0.1);
+            border: 1px solid rgba(102, 255, 0, 0.2);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .profit-label {
+            font-size: 0.8rem;
+            color: #A0A0A0;
+        }
+
+        .profit-value {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #66FF00;
+        }
+
+        .timer-box {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .timer-label {
+            font-size: 0.8rem;
+            color: #A0A0A0;
+        }
+
+        .timer-display {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #66FF00;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .claim-btn {
+            flex: 1;
+            padding: 10px;
+            background: linear-gradient(135deg, #66FF00 0%, #00D9FF 100%);
+            color: #0a0e13;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .records-btn {
+            flex: 1;
+            padding: 10px;
+            background: transparent;
+            border: 1px solid #00D9FF;
+            color: #00D9FF;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .status-box {
+            background: rgba(0, 217, 255, 0.1);
+            border: 1px solid rgba(0, 217, 255, 0.2);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #00D9FF;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .status-text {
+            font-size: 0.85rem;
+            color: #FFFFFF;
+            font-weight: 600;
+        }
+
+        /* MORE PAGE */
+        .profile-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(26, 31, 46, 0.5);
+            border-radius: 15px;
+            border-left: 3px solid #66FF00;
+        }
+
+        .profile-avatar {
+            font-size: 3rem;
+            border: 2px solid #66FF00;
+            border-radius: 12px;
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-info h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+
+        .profile-info p {
+            font-size: 0.8rem;
+            color: #A0A0A0;
+        }
+
+        .profile-title {
+            color: #66FF00;
+            font-size: 1.1rem;
+            margin-top: 5px;
+        }
+
+        .referral-box {
+            background: rgba(102, 255, 0, 0.1);
+            border: 1px solid rgba(102, 255, 0, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .referral-icon {
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .referral-content h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #FFFFFF;
+        }
+
+        .referral-content p {
+            font-size: 0.8rem;
+            color: #A0A0A0;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background: rgba(26, 31, 46, 0.5);
+            border-radius: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .menu-item:active {
+            transform: scale(0.98);
+        }
+
+        .menu-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .menu-icon {
+            font-size: 1.5rem;
+        }
+
+        .menu-text h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .menu-text p {
+            font-size: 0.75rem;
+            color: #A0A0A0;
+        }
+
+        .menu-arrow {
+            color: #FFFFFF;
+            font-size: 1.1rem;
+        }
+
+        /* NAVIGATION */
+        .navbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, transparent 0%, #0a0e13 30%);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0 18px 0;
+            border-top: 1px solid rgba(102, 255, 0, 0.2);
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #A0A0A0;
+            font-weight: 700;
+            font-size: 0.65rem;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .nav-btn.active {
+            color: #66FF00;
+        }
+
+        .nav-icon {
+            font-size: 1.3rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-left">
+                <span class="close">Fermer</span>
+            </div>
+            <div class="header-center">
+                <h1>30Days</h1>
+                <p>mini-application</p>
+            </div>
+            <div class="header-right">⋯</div>
+        </div>
+
+        <!-- HOME PAGE -->
+        <div id="home" class="page active">
+            <div class="welcome-section">
+                <div class="welcome-text">
+                    <h2>Hi, Brunvil</h2>
+                    <p>Welcome to 30Days</p>
+                </div>
+                <div class="welcome-icons">
+                    <span>🌐</span>
+                    <span>🎌</span>
+                    <span>📱</span>
+                </div>
+            </div>
+
+            <div class="balance-card">
+                <div class="balance-label">Your Total Balance</div>
+                <div class="balance-amount">$0.55</div>
+                <div class="roi-badge">▲ 131.8%</div>
+                <div class="coin-balance">Coin Balance: 🪙 0.29≈0.00USD</div>
+                <div class="action-buttons">
+                    <button class="action-btn">
+                        <span class="action-icon">💳</span>
+                        <span>Deposit</span>
+                    </button>
+                    <button class="action-btn">
+                        <span class="action-icon">💰</span>
+                        <span>Withdraw</span>
+                    </button>
+                    <button class="action-btn">
+                        <span class="action-icon">👥</span>
+                        <span>Invite</span>
+                    </button>
+                </div>
+                <div class="summary-box">
+                    <div class="summary-item">
+                        <div class="summary-value">5.00</div>
+                        <div class="summary-label">● Deposit</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-value">6.04</div>
+                        <div class="summary-label">● Withdraw</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stocks-header">
+                <h3>Stocks</h3>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <button class="market-cap-btn">Market Cap ▼</button>
+                    <span class="view-all">View all</span>
+                </div>
+            </div>
+
+            <div class="stock-item">
+                <div class="stock-info">
+                    <div class="stock-icon">🏢</div>
+                    <div class="stock-details">
+                        <h4>GS</h4>
+                        <p>Goldman Sachs G...</p>
+                    </div>
+                </div>
+                <div class="stock-chart"></div>
+                <div class="stock-price">
+                    <div class="stock-value">$1065.22</div>
+                    <div class="stock-change">▼ -2.76%</div>
+                </div>
+            </div>
+
+            <div class="stock-item">
+                <div class="stock-info">
+                    <div class="stock-icon">♾️</div>
+                    <div class="stock-details">
+                        <h4>META</h4>
+                        <p>Meta Platforms</p>
+                    </div>
+                </div>
+                <div class="stock-chart"></div>
+                <div class="stock-price">
+                    <div class="stock-value">$646.01</div>
+                    <div class="stock-change">▼ -2.79%</div>
+                </div>
+            </div>
+
+            <div class="stock-item">
+                <div class="stock-info">
+                    <div class="stock-icon">🏠</div>
+                    <div class="stock-details">
+                        <h4>HD</h4>
+                        <p>Home Depot Inc.</p>
+                    </div>
+                </div>
+                <div class="stock-chart"></div>
+                <div class="stock-price">
+                    <div class="stock-value">$338.87</div>
+                    <div class="stock-change">▼ -2.63%</div>
+                </div>
+            </div>
+
+            <div class="stock-item">
+                <div class="stock-info">
+                    <div class="stock-icon">🖥️</div>
+                    <div class="stock-details">
+                        <h4>IBM</h4>
+                        <p>International Busines...</p>
+                    </div>
+                </div>
+                <div class="stock-chart"></div>
+                <div class="stock-price">
+                    <div class="stock-value">$212.67</div>
+                    <div class="stock-change">▼ -2.91%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PRODUCTS PAGE -->
+        <div id="products" class="page">
+            <div class="tabs-header">
+                <div class="tab active" onclick="switchProduct('current')">Product</div>
+                <div class="tab" onclick="switchProduct('order')" style="color: #66FF00; border-bottom-color: #66FF00;">Order</div>
+            </div>
+
+            <div id="current-tab">
+                <div class="product-title">My Investment Orders</div>
+
+                <div class="product-card">
+                    <div class="product-status-dot"></div>
+                    <div class="product-header">
+                        <div class="product-info">
+                            <div class="product-icon">🔵</div>
+                            <div class="product-details">
+                                <h3>Blue-chip Stable Portfolio <span>💎</span></h3>
+                                <p>5-stock portfolio</p>
+                            </div>
+                        </div>
+                        <div class="product-badge">30-Day Basic</div>
+                    </div>
+
+                    <div class="stats-row">
+                        <div class="stat-cell">
+                            <div class="stat-label">Investment Amount</div>
+                            <div class="stat-value amount">$10</div>
+                        </div>
+                        <div class="stat-cell">
+                            <div class="stat-label">Cumulative Profit</div>
+                            <div class="stat-value profit">+$5.57</div>
+                        </div>
+                        <div class="stat-cell">
+                            <div class="stat-label">Total Profit</div>
+                            <div class="stat-value profit">+$6.83</div>
+                        </div>
+                    </div>
+
+                    <div class="date-range">
+                        <span>2024-12-01</span>
+                        <span>2024-12-31</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 85%;">
+                            <div class="progress-dot"></div>
+                        </div>
+                    </div>
+
+                    <div class="profit-box">
+                        <div class="profit-label">Current Expected Profit</div>
+                        <div style="text-align: right;">
+                            <div class="profit-value">+$0.3564</div>
+                            <div style="font-size: 0.75rem; color: #66FF00;">25/30 Times</div>
+                        </div>
+                    </div>
+
+                    <div class="timer-box">
+                        <div class="timer-label">Next Claim</div>
+                        <div class="timer-display" id="timer1">23:57:27</div>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="claim-btn" onclick="claimGains()">✓ Claim</button>
+                        <button class="records-btn">Records</button>
+                    </div>
+
+                    <div class="status-box" style="margin-top: 12px;">
+                        <div class="status-dot"></div>
+                        <span class="status-text">Waiting</span>
+                        <div class="status-dot" style="position: absolute; right: 15px;"></div>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-status-dot"></div>
+                    <div class="product-header">
+                        <div class="product-info">
+                            <div class="product-icon">🎁</div>
+                            <div class="product-details">
+                                <h3>Trial Product <span>🎉</span></h3>
+                                <p>5-stock portfolio</p>
+                            </div>
+                        </div>
+                        <div class="product-badge" style="background: rgba(255, 165, 0, 0.3); color: #FFA500; border-color: #FFA500;">Trial Product</div>
+                    </div>
+
+                    <div class="stats-row">
+                        <div class="stat-cell">
+                            <div class="stat-label">Investment Amount</div>
+                            <div class="stat-value amount">$5</div>
+                        </div>
+                        <div class="stat-cell">
+                            <div class="stat-label">Cumulative Profit</div>
+                            <div class="stat-value profit">+$0.93</div>
+                        </div>
+                        <div class="stat-cell">
+                            <div class="stat-label">Total Profit</div>
+                            <div class="stat-value profit">+$1.30</div>
+                        </div>
+                    </div>
+
+                    <div class="date-range">
+                        <span>2024-12-01</span>
+                        <span>2024-12-23</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 75%; background: linear-gradient(90deg, #FFA500 0%, #FF1493 100%);">
+                            <div class="progress-dot" style="background: #FFA500;"></div>
+                        </div>
+                    </div>
+
+                    <div class="profit-box" style="background: rgba(255, 165, 0, 0.1); border-color: rgba(255, 165, 0, 0.2);">
+                        <div class="profit-label">Current Expected Profit</div>
+                        <div style="text-align: right;">
+                            <div class="profit-value" style="color: #FFA500;">+$0.0576</div>
+                            <div style="font-size: 0.75rem; color: #FFA500;">22/30 Times</div>
+                        </div>
+                    </div>
+
+                    <div class="timer-box">
+                        <div class="timer-label">Next Claim</div>
+                        <div class="timer-display" id="timer2">23:57:33</div>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="claim-btn" style="background: linear-gradient(135deg, #FFA500 0%, #FF1493 100%);" onclick="claimGains()">✓ Claim</button>
+                        <button class="records-btn">Records</button>
+                    </div>
+
+                    <div class="status-box" style="margin-top: 12px;">
+                        <div class="status-dot"></div>
+                        <span class="status-text">Waiting</span>
+                        <div class="status-dot" style="position: absolute; right: 15px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MORE PAGE -->
+        <div id="more" class="page">
+            <div class="profile-section">
+                <div class="profile-avatar">🟨</div>
+                <div class="profile-info">
+                    <h3>Brunvil</h3>
+                    <p>8118891270</p>
+                    <p class="profile-title">30 Days</p>
+                </div>
+                <div style="margin-left: auto; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                    <span style="font-size: 1.5rem; position: relative;">💬 <span style="position: absolute; top: -5px; right: -5px; width: 8px; height: 8px; background: #FF6B6B; border-radius: 50%;"></span></span>
+                    <span style="font-size: 0.7rem; color: #A0A0A0;">Messages</span>
+                </div>
+            </div>
+
+            <div class="referral-box">
+                <div class="referral-icon">🎯</div>
+                <div class="referral-content">
+                    <h4>30Days Referral</h4>
+                    <p>Share with your friends and receive unlimited USD and unlimited gold coin rewards.</p>
+                </div>
+            </div>
+
+            <div class="menu-item" onclick="deposit()">
+                <div class="menu-left">
+                    <div class="menu-icon">💳</div>
+                    <div class="menu-text">
+                        <h4>Deposit</h4>
+                    </div>
+                </div>
+                <div class="menu-arrow">›</div>
+            </div>
+
+            <div class="menu-item" onclick="withdraw()">
+                <div class="menu-left">
+                    <div class="menu-icon">💰</div>
+                    <div class="menu-text">
+                        <h4>Withdraw</h4>
+                    </div>
+                </div>
+                <div class="menu-arrow">›</div>
+            </div>
+
+            <div class="menu-item">
+                <div class="menu-left">
+                    <div class="menu-icon">📋</div>
+                    <div class="menu-text">
+                        <h4>Records</h4>
+                    </div>
+                </div>
+                <div class="menu-arrow">›</div>
+            </div>
+
+            <div class="menu-item">
+                <div class="menu-left">
+                    <div class="menu-icon">🌐</div>
+                    <div class="menu-text">
+                        <h4>Language</h4>
+                        <p>fr</p>
+                    </div>
+                </div>
+                <div class="menu-arrow">›</div>
+            </div>
+
+            <div class="menu-item">
+                <div class="menu-left">
+                    <div class="menu-icon">❓</div>
+                    <div class="menu-text">
+                        <h4>FAQ</h4>
+                    </div>
+                </div>
+                <div class="menu-arrow">›</div>
+            </div>
+
+            <div class="menu-item">
+                <div class="menu-left">
+                    <div class="menu-icon">⚙️</div>
+                    <div class="menu-text">
+                        <h4>About</h4>
+                    </div>
+                </div>
+                <div class="menu-arrow">›</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NAVIGATION -->
+    <div class="navbar">
+        <button class="nav-btn active" onclick="goToPage('home')">
+            <span class="nav-icon">🏠</span>
+            <span>Home</span>
+        </button>
+        <button class="nav-btn" onclick="goToPage('products')">
+            <span class="nav-icon">📦</span>
+            <span>Products</span>
+        </button>
+        <button class="nav-btn" onclick="goToPage('team')">
+            <span class="nav-icon">👥</span>
+            <span>Team</span>
+        </button>
+        <button class="nav-btn" onclick="goToPage('tasks')">
+            <span class="nav-icon">✓</span>
+            <span>Tasks</span>
+        </button>
+        <button class="nav-btn" onclick="goToPage('more')">
+            <span class="nav-icon">⚙️</span>
+            <span>More</span>
+        </button>
+    </div>
+
+    <script>
+        let timer1 = 85647;
+        let timer2 = 85653;
+
+        function formatTime(s) {
+            const h = Math.floor(s / 3600);
+            const m = Math.floor((s % 3600) / 60);
+            const sec = s % 60;
+            return String(h).padStart(2, '0') + ':' +
+                   String(m).padStart(2, '0') + ':' +
+                   String(sec).padStart(2, '0');
+        }
+
+        function updateTimers() {
+            setInterval(() => {
+                document.getElementById('timer1').innerText = formatTime(timer1--);
+                document.getElementById('timer2').innerText = formatTime(timer2--);
+                if (timer1 < 0) timer1 = 86400;
+                if (timer2 < 0) timer2 = 86400;
+            }, 1000);
+        }
+
+        function goToPage(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(page).classList.add('active');
+            event.target.closest('.nav-btn').classList.add('active');
+        }
+
+        function switchProduct(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function claimGains() {
+            alert('✅ Gains claimed!');
+        }
+
+        function deposit() {
+            alert('💳 Deposit feature');
+        }
+
+        function withdraw() {
+            alert('💰 Withdraw feature');
+        }
+
+        updateTimers();
+    </script>
+</body>
+</html>
