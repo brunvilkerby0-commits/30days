@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>30Days Investment Platform</title>
+
+  <!-- Telegram WebApp SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <!-- Firebase JS SDK (v8) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* NEO-MODERN DARK MODE DESIGN SYSTEM */
+    :root {
+      --bg-color: #0B0E14;
+      --card-bg: #151C28;
+      --card-border: #222D3F;
+      --accent-green: #10B981;
+      --accent-green-bright: #70E000;
+      --accent-blue: #3B82F6;
+      --accent-orange: #F59E0B;
+      --text-white: #FFFFFF;
+      --text-gray: #94A3B8;
+      --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-main);
+      user-select: none;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-white);
+      padding-bottom: 90px;
+    }
+
+    /* HEADER */
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 16px;
+      background: var(--bg-color);
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .app-header h2 {
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+
+    .lang-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--accent-blue);
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .container {
+      padding: 14px;
+    }
+
+    .page-content {
+      display: none;
+    }
+
+    .page-content.active {
+      display: block;
+    }
+
+    /* CARDS */
+    .dashboard-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 15px;
+    }
+
+    /* PRODUCTS PAGE - AI STOCKS & PLAN SWITCH */
+    .ai-desc-box {
+      background: rgba(16, 185, 129, 0.05);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 0.8rem;
+      color: var(--text-gray);
+      line-height: 1.4;
+      margin-bottom: 15px;
+    }
+
+    .plan-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .plan-stat-box {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 12px 6px;
+      text-align: center;
+    }
+
+    .plan-stat-box strong {
+      display: block;
+      font-size: 1.05rem;
+      color: var(--accent-green-bright);
+      font-weight: 800;
+    }
+
+    .plan-stat-box span {
+      font-size: 0.68rem;
+      color: var(--text-gray);
+    }
+
+    .plan-types-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .plan-card-basic {
+      background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+      border-radius: 14px;
+      padding: 14px;
+      color: #000;
+      cursor: pointer;
+    }
+
+    .plan-card-pro {
+      background: linear-gradient(135deg, #f97316 0%, #dc2626 100%);
+      border-radius: 14px;
+      padding: 14px;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .plan-badge {
+      font-size: 0.7rem;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .plan-title {
+      font-size: 0.95rem;
+      font-weight: 800;
+      margin: 4px 0 10px 0;
+    }
+
+    .plan-profit-inner {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+      padding: 8px;
+      text-align: center;
+    }
+
+    .plan-profit-inner strong {
+      font-size: 1.1rem;
+      display: block;
+    }
+
+    /* STOCKS LIST */
+    .stock-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+    }
+
+    .stock-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .stock-icon {
+      width: 36px;
+      height: 36px;
+      background: #0E141F;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-blue);
+    }
+
+    .stock-price {
+      font-weight: 800;
+      color: var(--accent-green-bright);
+      font-size: 0.95rem;
+    }
+
+    /* ORDER VIEW (MY ACTIVE PLAN) */
+    .top-switches {
+      display: flex;
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 15px;
+      border: 1px solid var(--card-border);
+    }
+
+    .switch-btn {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-gray);
+      cursor: pointer;
+    }
+
+    .switch-btn.active {
+      background: var(--accent-green-bright);
+      color: #000;
+    }
+
+    .stats-row {
+      display: flex;
+      justify-content: space-between;
+      text-align: center;
+      background: #0E141F;
+      padding: 12px;
+      border-radius: 10px;
+      margin: 12px 0;
+    }
+
+    .stat-box span {
+      display: block;
+      font-size: 0.68rem;
+      color: var(--text-gray);
+    }
+
+    .stat-box strong {
+      font-size: 0.95rem;
+      color: var(--accent-green-bright);
+    }
+
+    .progress-bar-container {
+      background: #0B0E14;
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 12px 0;
+    }
+
+    .progress-bar-fill {
+      background: var(--accent-green-bright);
+      height: 100%;
+      width: 0%;
+    }
+
+    .timer-box {
+      background: #0B0E14;
+      border: 1px solid var(--accent-green-bright);
+      color: var(--accent-green-bright);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 0.85rem;
+    }
+
+    /* TASKS / ATTENDANCE STYLES */
+    .attendance-circle {
+      width: 130px;
+      height: 130px;
+      margin: 0 auto;
+      border-radius: 50%;
+      padding: 6px;
+      background: linear-gradient(135deg, #10B981 0%, #F59E0B 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .attendance-inner {
+      width: 100%;
+      height: 100%;
+      background: var(--bg-color);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .attendance-inner span {
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: #fff;
+      transform: rotate(-45deg);
+    }
+
+    .attendance-stats {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      display: flex;
+      padding: 12px 0;
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .att-stat-box { flex: 1; }
+    .att-num { font-size: 1.1rem; font-weight: 800; color: var(--accent-orange); }
+    .att-label { font-size: 0.68rem; color: var(--text-gray); margin-top: 4px; }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      text-align: center;
+    }
+
+    .week-header { font-size: 0.72rem; color: var(--text-gray); margin-bottom: 8px; }
+    
+    .day-box {
+      background: #0E141F;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 8px 0;
+      font-size: 0.78rem;
+      color: #fff;
+    }
+
+    .day-box.checked {
+      border: 1px solid var(--accent-green);
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-green-bright);
+      font-weight: bold;
+    }
+
+    .day-box.today {
+      border: 1px solid var(--accent-orange);
+      color: var(--accent-orange);
+      font-weight: bold;
+    }
+
+    /* WITHDRAWAL FORM */
+    .network-badge-active {
+      border: 1px solid var(--accent-green);
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--accent-green-bright);
+      padding: 10px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: bold;
+      font-size: 0.85rem;
+      width: fit-content;
+      margin-bottom: 15px;
+    }
+
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 0.78rem; color: var(--text-gray); margin-bottom: 6px; }
+    .form-control {
+      width: 100%;
+      background: #0E141F;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 12px;
+      color: #fff;
+      font-size: 0.88rem;
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: var(--accent-green-bright);
+      color: #000;
+      border: none;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    /* MORE / PROFILE PAGE */
+    .user-profile-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .msg-box-wrapper {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 12px;
+      margin-bottom: 15px;
+      max-height: 160px;
+      overflow-y: auto;
+    }
+
+    .menu-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 14px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+
+    .menu-item span { font-size: 0.88rem; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+
+    /* BOTTOM NAV BAR */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #0E141F;
+      border-top: 1px solid var(--card-border);
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      z-index: 1000;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: var(--text-gray);
+      font-size: 0.7rem;
+      cursor: pointer;
+    }
+
+    .nav-item i { font-size: 1.15rem; margin-bottom: 4px; }
+    .nav-item.active { color: var(--accent-green-bright); }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div class="app-header">
+    <h2 id="app-header-title">30Days Platform</h2>
+    <button class="lang-btn" onclick="toggleLanguage()" id="lang-toggle-btn">FR / ES</button>
+  </div>
+
+  <div class="container">
+
+    <!-- PAGE 1: HOME -->
+    <div id="page-home" class="page-content active">
+      <div class="dashboard-card">
+        <span style="font-size:0.78rem; color:var(--text-gray);" data-lang="total_bal">Solde Total</span>
+        <div style="font-size: 2rem; font-weight: 800; color: var(--accent-green-bright); margin: 6px 0 15px 0;" id="home-balance">$0.00 USD</div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div style="background:#0E141F; border:1px solid var(--card-border); border-radius:12px; padding:12px;">
+            <label style="font-size:0.72rem; color:var(--text-gray);" data-lang="deposit_box">Deposit (Actif)</label>
+            <strong style="font-size:1.1rem; display:block; margin-top:2px;" id="home-total-dep">$0.00</strong>
+          </div>
+          <div style="background:#0E141F; border:1px solid var(--card-border); border-radius:12px; padding:12px;">
+            <label style="font-size:0.72rem; color:var(--text-gray);" data-lang="withdraw_box">Withdrawal Total</label>
+            <strong style="font-size:1.1rem; display:block; margin-top:2px; color:var(--accent-blue);" id="home-total-wd">$0.00</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-card">
+        <h3 style="font-size:0.9rem; margin-bottom:12px;" data-lang="quick_actions">Actions Rapides</h3>
+        <div style="display:flex; gap:10px;">
+          <button class="btn-submit" style="margin:0;" onclick="switchPage('deposit')" data-lang="btn_dep">Déposer</button>
+          <button class="btn-submit" style="margin:0; background:var(--card-border); color:#fff;" onclick="switchPage('withdraw')" data-lang="btn_wd">Retirer</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE 2: PRODUCTS (INVESTMENT & AI STOCKS) -->
+    <div id="page-products" class="page-content">
+      <div class="top-switches">
+        <div class="switch-btn active" id="btn-tab-product" onclick="toggleProductTab('product-view')" data-lang="tab_prod">Product</div>
+        <div class="switch-btn" id="btn-tab-order" onclick="toggleProductTab('order-view')" data-lang="tab_ord">Order</div>
+      </div>
+
+      <!-- PRODUCT VIEW -->
+      <div id="product-view-container">
+        <div class="ai-desc-box" data-lang="ai_desc">
+          After investment, the AI system automatically combines 5 different stocks for trading every day, distributing dividends every 24 hours.
+        </div>
+
+        <div class="plan-stats-grid">
+          <div class="plan-stat-box">
+            <strong style="color:#fff;">30 Days</strong>
+            <span data-lang="stat_cycle">Investment Cycle</span>
+          </div>
+          <div class="plan-stat-box">
+            <strong>4.5%-7%</strong>
+            <span data-lang="stat_daily">Daily Return</span>
+          </div>
+          <div class="plan-stat-box">
+            <strong>94%-147%</strong>
+            <span data-lang="stat_total">Total Profit</span>
+          </div>
+        </div>
+
+        <div class="plan-types-grid">
+          <div class="plan-card-basic" onclick="switchPage('deposit')">
+            <div class="plan-badge">Basic</div>
+            <div class="plan-title">Basic Investment</div>
+            <div class="plan-profit-inner">
+              <span style="font-size:0.65rem;">Total Profit</span>
+              <strong>+94%</strong>
+            </div>
+          </div>
+
+          <div class="plan-card-pro" onclick="switchPage('deposit')">
+            <div class="plan-badge">PRO</div>
+            <div class="plan-title">Leverage Invest</div>
+            <div class="plan-profit-inner">
+              <span style="font-size:0.65rem;">Total Profit</span>
+              <strong>+125%-147%</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- STOCKS LIST -->
+        <h4 style="font-size:0.85rem; margin-bottom:12px; color:var(--text-gray);" data-lang="stock_title">AI Trading Stocks Portfolio</h4>
+
+        <div class="stock-item">
+          <div class="stock-info">
+            <div class="stock-icon"><i class="fa-solid fa-wrench"></i></div>
+            <div>
+              <div style="font-weight:bold; font-size:0.85rem;">AMD</div>
+              <div style="font-size:0.7rem; color:var(--text-gray);">Advanced Micro</div>
+            </div>
+          </div>
+          <div class="stock-price">$544</div>
+        </div>
+
+        <div class="stock-item">
+          <div class="stock-info">
+            <div class="stock-icon"><i class="fa-solid fa-laptop"></i></div>
+            <div>
+              <div style="font-weight:bold; font-size:0.85rem;">ARM</div>
+              <div style="font-size:0.7rem; color:var(--text-gray);">Arm Holdings</div>
+            </div>
+          </div>
+          <div class="stock-price">$289</div>
+        </div>
+
+        <div class="stock-item">
+          <div class="stock-info">
+            <div class="stock-icon"><i class="fa-solid fa-palette"></i></div>
+            <div>
+              <div style="font-weight:bold; font-size:0.85rem;">ADBE</div>
+              <div style="font-size:0.7rem; color:var(--text-gray);">Adobe Inc.</div>
+            </div>
+          </div>
+          <div class="stock-price">$227</div>
+        </div>
+
+        <div class="stock-item">
+          <div class="stock-info">
+            <div class="stock-icon"><i class="fa-solid fa-bolt"></i></div>
+            <div>
+              <div style="font-weight:bold; font-size:0.85rem;">CRWD</div>
+              <div style="font-size:0.7rem; color:var(--text-gray);">CrowdStrike</div>
+            </div>
+          </div>
+          <div class="stock-price">$191</div>
+        </div>
+      </div>
+
+      <!-- ORDER VIEW (ACTIVE PLAN) -->
+      <div id="order-view-container" style="display:none;">
+        <div id="user-orders-dynamic">
+          <!-- Dynamic Order Card Inject -->
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE 3: TASKS (ATTENDANCE) -->
+    <div id="page-tasks" class="page-content">
+      <div style="text-align: center; margin: 15px 0;">
+        <div class="attendance-circle" onclick="doDailyCheckIn()">
+          <div class="attendance-inner">
+            <span>Attendance</span>
+          </div>
+        </div>
+        <p style="font-size: 0.75rem; color: var(--text-gray); margin-top: 12px;" data-lang="att_desc">
+          Daily sign-in gives 500–2000 coins. Keep signing in continuously to earn more rewards.
+        </p>
+      </div>
+
+      <div class="attendance-stats">
+        <div class="att-stat-box">
+          <div class="att-num" id="stat-signed-count">1</div>
+          <div class="att-label" data-lang="signed_month">Signed this month</div>
+        </div>
+        <div class="att-stat-box" style="border-left:1px solid var(--card-border); border-right:1px solid var(--card-border);">
+          <div class="att-num" id="stat-cumulative">748.29</div>
+          <div class="att-label" data-lang="cumulative">Cumulative</div>
+        </div>
+        <div class="att-stat-box">
+          <div class="att-num" style="color:var(--accent-green-bright);" id="stat-today-num">29</div>
+          <div class="att-label" data-lang="today_label">Today</div>
+        </div>
+      </div>
+
+      <div class="dashboard-card" style="margin-top: 15px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <span style="width: 8px; height: 8px; background: var(--accent-green-bright); border-radius: 50%;"></span>
+            <strong style="font-size: 0.85rem;" data-lang="daily_rec">Daily Records This Month</strong>
+          </div>
+          <span style="font-size: 0.8rem; color: var(--text-gray); font-weight: bold;" id="cal-month-name">July</span>
+        </div>
+
+        <div class="calendar-grid week-header">
+          <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+        </div>
+
+        <div class="calendar-grid" id="calendar-days-container"></div>
+      </div>
+    </div>
+
+    <!-- PAGE 4: MORE (PROFILE & SETTINGS) -->
+    <div id="page-more" class="page-content">
+      <div class="dashboard-card">
+        <div class="user-profile-header">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div style="width:40px; height:40px; background:rgba(59,130,246,0.15); color:var(--accent-blue); border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold;">
+              <i class="fa-solid fa-user"></i>
+            </div>
+            <div>
+              <div style="font-weight:bold; font-size:0.95rem;" id="user-display-name">Brunvil</div>
+              <div style="font-size:0.75rem; color:var(--text-gray);" id="user-display-id">8118891270</div>
+            </div>
+          </div>
+          <div style="background:rgba(59,130,246,0.15); color:var(--accent-blue); padding:6px 10px; border-radius:8px; font-size:0.75rem; cursor:pointer;" onclick="toggleMsgBox()">
+            <i class="fa-solid fa-comment-dots"></i> Messages
+          </div>
+        </div>
+      </div>
+
+      <!-- MESSAGE/NOTIFICATION BOX -->
+      <div class="msg-box-wrapper" id="msg-box-container">
+        <div style="font-size:0.8rem; font-weight:bold; color:var(--accent-blue); margin-bottom:8px;">
+          <i class="fa-solid fa-bell"></i> Messages & Transactions
+        </div>
+        <div id="notification-list">
+          <div style="font-size:0.75rem; color:var(--text-gray);">Aucun message récent.</div>
+        </div>
+      </div>
+
+      <!-- MENU LIST -->
+      <div class="menu-item" onclick="switchPage('deposit')">
+        <span><i class="fa-solid fa-wallet" style="color:var(--accent-green-bright);"></i> Deposit</span>
+        <i class="fa-solid fa-chevron-right" style="font-size:0.75rem; color:var(--text-gray);"></i>
+      </div>
+
+      <div class="menu-item" onclick="switchPage('withdraw')">
+        <span><i class="fa-solid fa-money-bill-transfer" style="color:var(--accent-blue);"></i> Withdraw</span>
+        <i class="fa-solid fa-chevron-right" style="font-size:0.75rem; color:var(--text-gray);"></i>
+      </div>
+
+      <div class="menu-item" onclick="toggleLanguage()">
+        <span><i class="fa-solid fa-globe" style="color:var(--accent-orange);"></i> Language</span>
+        <span style="font-size:0.75rem; color:var(--accent-blue);" id="menu-lang-indicator">fr ></span>
+      </div>
+
+      <!-- REFERRAL CARD -->
+      <div class="dashboard-card" style="margin-top:15px;">
+        <h4 style="font-size:0.85rem; margin-bottom:6px;" data-lang="ref_title">Invitation Link</h4>
+        <div style="background:#0E141F; border:1px solid var(--card-border); padding:10px; border-radius:8px; font-size:0.75rem; color:var(--accent-green-bright); word-break:break-all;" id="ref-link-text">
+          https://t.me/Stock_30Days_bot?start=8118891270
+        </div>
+        <button class="btn-submit" style="margin-top:10px;" onclick="copyRefLink()" data-lang="btn_copy">Copy Link</button>
+      </div>
+    </div>
+
+    <!-- PAGE 5: WITHDRAW (BEP20) -->
+    <div id="page-withdraw" class="page-content">
+      <h3 style="font-size:1rem; margin-bottom:12px;" data-lang="wd_title">Withdraw</h3>
+
+      <div class="dashboard-card">
+        <span style="font-size:0.75rem; color:var(--text-gray);">Withdrawable Balance</span>
+        <div style="font-size:1.6rem; font-weight:800; color:var(--accent-green-bright); margin:4px 0;" id="wd-balance-val">$0.00 USD</div>
+
+        <!-- NETWORK SELECTION (BEP20 ONLY) -->
+        <div style="margin: 12px 0;">
+          <label style="font-size:0.75rem; color:var(--text-gray); display:block; margin-bottom:6px;">Network</label>
+          <div class="network-badge-active">
+            <i class="fa-solid fa-coins"></i> BSC (BEP20)
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label data-lang="wd_addr">Withdrawal Address</label>
+          <input type="text" class="form-control" id="wd-address" placeholder="0x...">
+        </div>
+
+        <div class="form-group">
+          <label data-lang="wd_amt">Withdrawal Amount (Min $1.00)</label>
+          <input type="number" class="form-control" id="wd-amount" placeholder="Enter amount">
+        </div>
+
+        <div style="background:#0E141F; border:1px solid var(--card-border); border-radius:10px; padding:10px; margin:12px 0; font-size:0.75rem;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Currency</span><strong>USDT-BEP20</strong></div>
+          <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Withdrawal Fee</span><strong>$0.00</strong></div>
+        </div>
+
+        <button class="btn-submit" onclick="submitWithdraw()" data-lang="btn_sub_wd">Submit Withdrawal</button>
+      </div>
+    </div>
+
+    <!-- PAGE 6: DEPOSIT -->
+    <div id="page-deposit" class="page-content">
+      <h3 style="font-size:1rem; margin-bottom:12px;" data-lang="dep_title">Deposit USDT (BEP20)</h3>
+
+      <div class="dashboard-card">
+        <label style="font-size:0.78rem; color:var(--text-gray);" data-lang="dep_addr_label">Adresse de Dépôt BEP20:</label>
+        <div style="background:#0E141F; border:1px solid var(--card-border); padding:10px; border-radius:8px; font-size:0.78rem; color:var(--accent-green-bright); word-break:break-all; margin:8px 0;" id="official-bep20-addr">
+          VOTRE_ADRESSE_BEP20_ICI
+        </div>
+
+        <div class="form-group" style="margin-top:14px;">
+          <label data-lang="dep_amt_input">Montant Déposé ($)</label>
+          <input type="number" class="form-control" id="dep-amount" placeholder="Montant">
+        </div>
+
+        <button class="btn-submit" onclick="confirmDeposit()" data-lang="btn_conf_dep">Valider le dépôt</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM NAVIGATION BAR -->
+  <div class="bottom-nav">
+    <div class="nav-item active" onclick="switchPage('home')">
+      <i class="fa-solid fa-house"></i>
+      <span>HOME</span>
+    </div>
+    <div class="nav-item" onclick="switchPage('products')">
+      <i class="fa-solid fa-box-open"></i>
+      <span>PRODUCTS</span>
+    </div>
+    <div class="nav-item" onclick="switchPage('tasks')">
+      <i class="fa-solid fa-calendar-check"></i>
+      <span>TASKS</span>
+    </div>
+    <div class="nav-item" onclick="switchPage('more')">
+      <i class="fa-solid fa-gear"></i>
+      <span>MORE</span>
+    </div>
+  </div>
+
+  <script>
+    // 1. BEP20 ADDRESS (Mete pa w la la)
+    const BEP20_ADDRESS = "VOTRE_ADRESSE_BEP20_ICI";
+    document.getElementById("official-bep20-addr").innerText = BEP20_ADDRESS;
+
+    // 2. TRANSLATIONS (FR / ES)
+    let currentLang = "fr";
+    const translations = {
+      fr: {
+        total_bal: "Solde Total",
+        deposit_box: "Deposit (Actif)",
+        withdraw_box: "Withdrawal Total",
+        quick_actions: "Actions Rapides",
+        btn_dep: "Déposer",
+        btn_wd: "Retirer",
+        tab_prod: "Product",
+        tab_ord: "Order",
+        ai_desc: "Après envestisman an, sistèm AI a ap konbine 5 aksyon diferan chak jou pou distribye dividann chak 24 èdtan.",
+        stat_cycle: "Cycle D'Investissement",
+        stat_daily: "Rendement Quotidien",
+        stat_total: "Profit Total",
+        stock_title: "Portfolio d'Actions AI",
+        att_desc: "Daily sign-in gives 500–2000 coins. Keep signing in continuously to earn more rewards.",
+        signed_month: "Signed this month",
+        cumulative: "Cumulative",
+        today_label: "Today",
+        daily_rec: "Daily Records This Month",
+        ref_title: "Lien d'invitation",
+        btn_copy: "Copier le lien",
+        wd_title: "Retrait USDT (BEP20)",
+        wd_addr: "Adresse de Retrait",
+        wd_amt: "Montant à Retirer (Min $1.00)",
+        btn_sub_wd: "Submit Withdrawal",
+        dep_title: "Dépôt USDT (BEP20)",
+        dep_addr_label: "Adresse Officielle BEP20:",
+        dep_amt_input: "Montant Déposé ($)",
+        btn_conf_dep: "Valider le Dépôt"
+      },
+      es: {
+        total_bal: "Saldo Total",
+        deposit_box: "Depósito (Activo)",
+        withdraw_box: "Retiro Total",
+        quick_actions: "Acciones Rápidas",
+        btn_dep: "Depositar",
+        btn_wd: "Retirar",
+        tab_prod: "Producto",
+        tab_ord: "Orden",
+        ai_desc: "Después de la inversión, el sistema IA combina 5 acciones diferentes cada día para distribuir dividendos cada 24 horas.",
+        stat_cycle: "Ciclo de Inversión",
+        stat_daily: "Rendimiento Diario",
+        stat_total: "Ganancia Total",
+        stock_title: "Portafolio de Acciones IA",
+        att_desc: "El inicio de sesión diario otorga 500–2000 monedas. Manténgase activo diariamente.",
+        signed_month: "Firmado este mes",
+        cumulative: "Acumulado",
+        today_label: "Hoy",
+        daily_rec: "Registros Diarios Este Mes",
+        ref_title: "Enlace de Invitación",
+        btn_copy: "Copiar Enlace",
+        wd_title: "Retiro USDT (BEP20)",
+        wd_addr: "Dirección de Retiro",
+        wd_amt: "Monto a Retirar (Mín $1.00)",
+        btn_sub_wd: "Confirmar Retiro",
+        dep_title: "Depósito USDT (BEP20)",
+        dep_addr_label: "Dirección Oficial BEP20:",
+        dep_amt_input: "Monto Depositado ($)",
+        btn_conf_dep: "Validar Depósito"
+      }
+    };
+
+    function toggleLanguage() {
+      currentLang = (currentLang === "fr") ? "es" : "fr";
+      document.querySelectorAll("[data-lang]").forEach(el => {
+        const key = el.getAttribute("data-lang");
+        if(translations[currentLang][key]) el.innerText = translations[currentLang][key];
+      });
+      document.getElementById("lang-toggle-btn").innerText = currentLang.toUpperCase() + " / " + (currentLang === "fr" ? "ES" : "FR");
+      document.getElementById("menu-lang-indicator").innerText = currentLang + " >";
+    }
+
+    // 3. FIREBASE & TELEGRAM INITIALIZATION
+    const firebaseConfig = { databaseURL: "https://days-51e9b-default-rtdb.firebaseio.com" };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+    const telegramUser = tg.initDataUnsafe?.user || { id: "8118891270", first_name: "Brunvil" };
+    const userId = telegramUser.id.toString();
+
+    document.getElementById("user-display-name").innerText = telegramUser.first_name || "Brunvil";
+    document.getElementById("user-display-id").innerText = userId;
+    document.getElementById("ref-link-text").innerText = "https://t.me/Stock_30Days_bot?start=" + userId;
+
+    // 4. REALTIME LISTENERS
+    const userRef = db.ref("users/" + userId);
+    userRef.on("value", (snapshot) => {
+      const data = snapshot.val() || {};
+      const bal = (data.balance || 0).toFixed(2);
+      const dep = (data.totalDeposits || 0).toFixed(2);
+      const wd = (data.totalWithdrawals || 0).toFixed(2);
+
+      document.getElementById("home-balance").innerText = "$" + bal + " USD";
+      document.getElementById("wd-balance-val").innerText = "$" + bal + " USD";
+      document.getElementById("home-total-dep").innerText = "$" + dep;
+      document.getElementById("home-total-wd").innerText = "$" + wd;
+    });
+
+    // LISTEN TO TRANSACTIONS (MESSAGES BOX)
+    db.ref("history/" + userId).limitToLast(5).on("value", (snapshot) => {
+      const historyData = snapshot.val();
+      const listContainer = document.getElementById("notification-list");
+      if(!historyData) return;
+
+      let html = "";
+      Object.keys(historyData).reverse().forEach(key => {
+        let item = historyData[key];
+        let color = (item.type === 'deposit') ? 'var(--accent-green-bright)' : 'var(--accent-blue)';
+        html += `
+          <div style="font-size:0.75rem; padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.05); display:flex; justify-content:space-between;">
+            <span><strong style="color:${color}">${item.type.toUpperCase()}:</strong> $${item.amount}</span>
+            <span style="color:var(--text-gray); font-size:0.68rem;">${item.date}</span>
+          </div>
+        `;
+      });
+      listContainer.innerHTML = html;
+    });
+
+    // ACTIVE ORDERS LISTENERS
+    db.ref("plans/" + userId).on("value", (snapshot) => {
+      const plans = snapshot.val();
+      const container = document.getElementById("user-orders-dynamic");
+
+      if (!plans) {
+        container.innerHTML = '<div style="color:var(--text-gray); font-size:0.85rem; text-align:center; padding:20px;">Aucune commande active pour le moment.</div>';
+        return;
+      }
+
+      let html = "";
+      for (let key in plans) {
+        let plan = plans[key];
+        let startDate = new Date(plan.startDate);
+        let now = new Date();
+        let daysPassed = Math.floor((now - startDate) / (1000 * 60 * 60 * 24)) + 1;
+        if (daysPassed > 30) daysPassed = 30;
+
+        let cumProfit = (plan.dailyProfit * daysPassed).toFixed(2);
+
+        html += `
+          <div class="dashboard-card">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <h3 style="font-size:0.9rem;">Blue-chip Stable Portfolio</h3>
+              <span style="color:var(--accent-green-bright); font-size:0.75rem; font-weight:bold;">30-Day Basic</span>
+            </div>
+
+            <div class="stats-row">
+              <div class="stat-box"><span>Investment Amount</span><strong>$${plan.depositAmount}</strong></div>
+              <div class="stat-box"><span>Cumulative Profit</span><strong style="color:var(--accent-green-bright);">+$${cumProfit}</strong></div>
+              <div class="stat-box"><span>Total Profit</span><strong>+$${plan.totalProfit}</strong></div>
+            </div>
+
+            <div class="progress-bar-container">
+              <div class="progress-bar-fill" style="width: ${(daysPassed/30)*100}%;"></div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+              <span class="timer-box" id="timer-count">23 : 59 : 59</span>
+              <span style="font-size:0.75rem; color:var(--accent-green-bright);">${daysPassed}/30 Times</span>
+            </div>
+          </div>
+        `;
+      }
+      container.innerHTML = html;
+      start24hTimer();
+    });
+
+    function start24hTimer() {
+      setInterval(() => {
+        const now = new Date();
+        const hours = 23 - now.getHours();
+        const minutes = 59 - now.getMinutes();
+        const seconds = 59 - now.getSeconds();
+        const timerEl = document.getElementById("timer-count");
+        if(timerEl) {
+          timerEl.innerText = `${hours < 10 ? '0'+hours : hours}:${minutes < 10 ? '0'+minutes : minutes}:${seconds < 10 ? '0'+seconds : seconds}`;
+        }
+      }, 1000);
+    }
+
+    // CALENDAR GENERATOR
+    function renderCalendar() {
+      const container = document.getElementById("calendar-days-container");
+      if(!container) return;
+
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.getMonth();
+      const today = now.getDate();
+
+      const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      document.getElementById("cal-month-name").innerText = monthNames[month];
+      document.getElementById("stat-today-num").innerText = today;
+
+      const firstDay = new Date(year, month, 1).getDay();
+      const totalDays = new Date(year, month + 1, 0).getDate();
+
+      let html = "";
+      for (let i = 0; i < firstDay; i++) { html += `<div></div>`; }
+
+      for (let day = 1; day <= totalDays; day++) {
+        let isToday = (day === today) ? "today" : "";
+        let isChecked = (day === 2) ? "checked" : "";
+        html += `<div class="day-box ${isChecked} ${isToday}">${day}</div>`;
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ACTIONS
+    function confirmDeposit() {
+      const amount = parseFloat(document.getElementById("dep-amount").value);
+      if(!amount || amount <= 0) return alert("Veuillez entrer un montant valide.");
+
+      const daily = parseFloat((amount * 0.045).toFixed(2));
+      const totalP = parseFloat((daily * 30).toFixed(2));
+
+      db.ref("plans/" + userId + "/" + Date.now()).set({
+        depositAmount: amount,
+        dailyProfit: daily,
+        totalProfit: totalP,
+        startDate: (new Date()).toISOString()
+      });
+
+      userRef.once("value", (snap) => {
+        const d = snap.val() || {};
+        userRef.update({
+          balance: (d.balance || 0) + amount,
+          totalDeposits: (d.totalDeposits || 0) + amount
+        });
+      });
+
+      addHistoryRecord("deposit", amount);
+      alert("Dépôt réussi!");
+      switchPage('products');
+      toggleProductTab('order-view');
+    }
+
+    function submitWithdraw() {
+      const amount = parseFloat(document.getElementById("wd-amount").value);
+      const address = document.getElementById("wd-address").value.trim();
+
+      if(!amount || amount < 1.0) return alert("Le montant minimum est de $1.00 USDT");
+      if(!address) return alert("Veuillez entrer une adresse BEP20 valide");
+
+      userRef.once("value", (snap) => {
+        const d = snap.val() || {};
+        const cur = d.balance || 0;
+        if(cur < amount) return alert("Solde insuffisant!");
+
+        userRef.update({
+          balance: cur - amount,
+          totalWithdrawals: (d.totalWithdrawals || 0) + amount
+        });
+
+        addHistoryRecord("withdraw", amount);
+        alert("Demande de retrait soumise!");
+        document.getElementById("wd-amount").value = "";
+      });
+    }
+
+    function addHistoryRecord(type, amount) {
+      const dateStr = (new Date()).toLocaleDateString() + " " + (new Date()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      db.ref("history/" + userId + "/" + Date.now()).set({ type: type, amount: amount, date: dateStr });
+    }
+
+    function copyRefLink() {
+      navigator.clipboard.writeText(document.getElementById("ref-link-text").innerText);
+      alert("Lien copié!");
+    }
+
+    function doDailyCheckIn() { alert("Présence du jour validée!"); }
+
+    // NAVIGATION SWITCHES
+    function switchPage(pageId) {
+      document.querySelectorAll(".page-content").forEach(el => el.classList.remove("active"));
+      document.querySelectorAll(".nav-item").forEach(el => el.classList.remove("active"));
+
+      document.getElementById("page-" + pageId).classList.add("active");
+      const navIndex = { 'home':0, 'products':1, 'tasks':2, 'more':3 };
+      if(navIndex[pageId] !== undefined) {
+        document.querySelectorAll(".nav-item")[navIndex[pageId]].classList.add("active");
+      }
+    }
+
+    function toggleProductTab(tabName) {
+      if(tabName === 'product-view') {
+        document.getElementById("product-view-container").style.display = "block";
+        document.getElementById("order-view-container").style.display = "none";
+        document.getElementById("btn-tab-product").classList.add("active");
+        document.getElementById("btn-tab-order").classList.remove("active");
+      } else {
+        document.getElementById("product-view-container").style.display = "none";
+        document.getElementById("order-view-container").style.display = "block";
+        document.getElementById("btn-tab-order").classList.add("active");
+        document.getElementById("btn-tab-product").classList.remove("active");
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", renderCalendar);
+  </script>
+</body>
+</html>
