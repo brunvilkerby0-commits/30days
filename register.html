@@ -1,1 +1,57 @@
 
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>30Days - Inscription</title>
+
+<link rel="stylesheet" href="auth.css">
+
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
+</head>
+<body>
+
+<div class="auth-container">
+
+<img src="logo.png" class="logo">
+
+<h2>Créer un compte</h2>
+
+<p>Bienvenue sur 30Days</p>
+
+<input
+type="email"
+id="email"
+placeholder="Adresse Email">
+
+<input
+type="password"
+id="password"
+placeholder="Mot de passe">
+
+<button onclick="registerUser()">
+Créer un compte
+</button>
+
+<p>
+
+Vous avez déjà un compte ?
+
+<a href="login.html">
+Se connecter
+</a>
+
+</p>
+
+</div>
+
+<script src="firebase.js"></script>
+<script src="auth.js"></script>
+
+</body>
+</html>
