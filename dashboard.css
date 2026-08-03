@@ -1,1 +1,277 @@
+/* ===========================
+   THIRTY DAYS DASHBOARD
+=========================== */
 
+.container{
+    width:100%;
+    max-width:450px;
+    margin:auto;
+    padding:15px;
+    padding-bottom:90px;
+}
+
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.logo-area{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.logo{
+    width:55px;
+    height:55px;
+    border-radius:50%;
+}
+
+.logo-area h2{
+    color:#ffffff;
+    font-size:22px;
+}
+
+.logo-area p{
+    color:#999;
+    font-size:13px;
+}
+
+.profile-icon i{
+    color:#00c3ff;
+    font-size:30px;
+}
+
+.banner img{
+    width:100%;
+    border-radius:15px;
+    margin-bottom:20px;
+}
+
+.balance-card{
+    background:#161b22;
+    border-radius:15px;
+    padding:20px;
+    text-align:center;
+    margin-bottom:20px;
+    box-shadow:0 0 15px rgba(0,195,255,.15);
+}
+
+.balance-card p{
+    color:#999;
+    font-size:15px;
+}
+
+.balance-card h1{
+    color:#00ff99;
+    margin:12px 0;
+    font-size:32px;
+}
+
+.balance-buttons{
+    display:flex;
+    gap:10px;
+}
+
+.balance-buttons button{
+    flex:1;
+    background:#00c3ff;
+    color:white;
+    border:none;
+    padding:12px;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:15px;
+    font-weight:bold;
+}
+
+.balance-buttons button:hover{
+    background:#0099cc;
+}
+
+.profit-card{
+    background:#161b22;
+    border-radius:15px;
+    padding:20px;
+    margin-bottom:20px;
+    text-align:center;
+}
+
+.profit-card h3{
+    color:white;
+}
+
+.profit-card h2{
+    color:#00ff99;
+    margin:10px 0;
+}
+
+.profit-card p{
+    color:#999;
+    margin-bottom:15px;
+}
+
+#claimBtn{
+    width:100%;
+    background:#00ff99;
+    color:#111;
+    border:none;
+    padding:14px;
+    border-radius:10px;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+}
+.quick-menu{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+    margin-bottom:20px;
+}
+
+.menu-item{
+    background:#161b22;
+    border-radius:15px;
+    padding:18px 10px;
+    text-align:center;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.menu-item:hover{
+    transform:translateY(-5px);
+    box-shadow:0 0 15px rgba(0,195,255,.2);
+}
+
+.menu-item i{
+    font-size:24px;
+    color:#00c3ff;
+    margin-bottom:10px;
+}
+
+.menu-item span{
+    display:block;
+    color:#ffffff;
+    font-size:14px;
+}
+
+.transactions{
+    background:#161b22;
+    border-radius:15px;
+    padding:20px;
+    margin-bottom:20px;
+}
+
+.transactions h3{
+    color:#ffffff;
+    margin-bottom:15px;
+}
+
+.transaction-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:12px 0;
+    border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.transaction-item:last-child{
+    border-bottom:none;
+}
+
+.transaction-item h4{
+    color:#ffffff;
+    font-size:15px;
+}
+
+.transaction-item p{
+    color:#999;
+    font-size:13px;
+}
+
+.transaction-item span{
+    color:#00ff99;
+    font-weight:bold;
+}
+
+.support-card{
+    margin-bottom:20px;
+}
+
+.support-card a{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:10px;
+    background:#0088cc;
+    color:#ffffff;
+    text-decoration:none;
+    padding:15px;
+    border-radius:12px;
+    font-weight:bold;
+    transition:.3s;
+}
+
+.support-card a:hover{
+    background:#0a6ea8;
+}
+
+.bottom-nav{
+    position:fixed;
+    bottom:0;
+    left:0;
+    width:100%;
+    background:#161b22;
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    padding:12px 0;
+    border-top:1px solid rgba(255,255,255,.08);
+    z-index:999;
+}
+
+.bottom-nav a{
+    text-decoration:none;
+    color:#888;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    font-size:12px;
+}
+
+.bottom-nav a i{
+    font-size:20px;
+    margin-bottom:4px;
+}
+
+.bottom-nav a.active,
+.bottom-nav a:hover{
+    color:#00c3ff;
+}
+
+@media(max-width:480px){
+
+.logo{
+    width:45px;
+    height:45px;
+}
+
+.logo-area h2{
+    font-size:18px;
+}
+
+.balance-card h1{
+    font-size:28px;
+}
+
+.balance-buttons{
+    flex-direction:column;
+}
+
+.quick-menu{
+    grid-template-columns:repeat(3,1fr);
+}
+
+}
