@@ -1,0 +1,56 @@
+<input
+type="number"
+id="amount"
+placeholder="Montant envoyé (Minimum 10 USDT)">
+
+<button onclick="submitDeposit()">
+J'ai effectué le dépôt
+</button>
+
+<script>
+
+function submitDeposit(){
+
+let amount=parseFloat(document.getElementById("amount").value);
+
+if(isNaN(amount)||amount<10){
+
+alert("Le dépôt minimum est de 10 USDT.");
+
+return;
+
+}
+
+db.collection("deposits").add({
+
+uid:auth.currentUser.uid,
+
+amount:amount,
+
+network:document.getElementById("network").value,
+
+wallet:document.getElementById("address").innerText,
+
+status:"En attente",
+
+date:firebase.firestore.FieldValue.serverTimestamp()
+
+})
+
+.then(()=>{
+
+alert("Votre dépôt a été envoyé avec succès. Attendez la validation de l'administrateur.");
+
+document.getElementById("amount").value="";
+
+})
+
+.catch(error=>{
+
+alert(error.message);
+
+});
+
+}
+
+</script>
