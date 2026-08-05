@@ -1,1 +1,203 @@
 
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Historique - 30 Days</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+body{
+background:#0f172a;
+font-family:Arial,sans-serif;
+color:white;
+padding:20px;
+}
+
+.card{
+max-width:600px;
+margin:auto;
+background:#1e293b;
+padding:20px;
+border-radius:15px;
+}
+
+h2{
+text-align:center;
+margin-bottom:20px;
+}
+
+.item{
+background:#334155;
+padding:15px;
+border-radius:10px;
+margin-bottom:15px;
+}
+
+.green{
+color:#00e676;
+}
+
+.red{
+color:#ff5252;
+}
+
+.orange{
+color:orange;
+}
+
+.small{
+font-size:14px;
+opacity:.8;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="card">
+
+<h2>Historique</h2>
+
+<div id="history">
+
+Chargement...
+
+</div>
+
+</div>
+
+<script>
+
+db.collection("withdraws")
+
+.where("uid","==",auth.currentUser.uid)
+
+.orderBy("date","desc")
+
+.onSnapshot(function(snapshot){
+
+let html="";
+
+snapshot.forEach(function(doc){
+
+let d=doc.data();
+
+html+=`
+
+<div class="item">
+
+<h3 class="red">
+
+Retrait
+
+</h3>
+
+<p>
+
+Montant :
+
+${d.amount} USDT
+
+</p>
+
+<p>
+
+Frais :
+
+${d.fee} USDT
+
+</p>
+
+<p>
+
+Total :
+
+${d.total} USDT
+
+</p>
+
+<p class="orange">
+
+Statut :
+
+${d.status}
+
+</p>
+
+</div>
+
+`;
+
+});
+
+db.collection("deposits")
+
+.where("uid","==",auth.currentUser.uid)
+
+.orderBy("date","desc")
+
+.get()
+
+.then(function(dep){
+
+dep.forEach(function(doc){
+
+let d=doc.data();
+
+html+=`
+
+<div class="item">
+
+<h3 class="green">
+
+Dépôt
+
+</h3>
+
+<p>
+
+Montant :
+
+${d.amount} USDT
+
+</p>
+
+<p class="orange">
+
+Statut :
+
+${d.status}
+
+</p>
+
+</div>
+
+`;
+
+});
+
+if(html==""){
+
+html="<center>Aucune transaction.</center>";
+
+}
+
+document.getElementById("history").innerHTML=html;
+
+});
+
+});
+
+</script>
+
+</body>
+
+</html>
