@@ -1,1 +1,170 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Retrait - 30 Days</title>
 
+<link rel="stylesheet" href="style.css">
+
+<style>
+body{
+background:#0f172a;
+font-family:Arial,sans-serif;
+color:white;
+padding:20px;
+}
+
+.card{
+max-width:500px;
+margin:auto;
+background:#1e293b;
+padding:20px;
+border-radius:15px;
+}
+
+input,button{
+width:100%;
+padding:12px;
+margin-top:12px;
+border:none;
+border-radius:10px;
+font-size:16px;
+}
+
+input{
+background:#334155;
+color:white;
+}
+
+button{
+background:#00c853;
+color:white;
+font-weight:bold;
+cursor:pointer;
+}
+
+button:hover{
+opacity:.9;
+}
+
+.info{
+margin-top:15px;
+padding:10px;
+background:#0f172a;
+border-radius:10px;
+line-height:28px;
+}
+
+h2{
+text-align:center;
+margin-bottom:20px;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="card">
+
+<h2>Retrait USDT</h2>
+
+<div class="info">
+
+Minimum Retrait :
+<b>1.50 USDT</b>
+
+<br><br>
+
+Frais :
+<b>0.50 USDT</b>
+
+</div>
+
+<input
+type="text"
+id="wallet"
+placeholder="Adresse BEP20 / TRC20">
+
+<input
+type="number"
+id="amount"
+placeholder="Montant">
+
+<button onclick="withdraw()">
+
+Demander le Retrait
+
+</button>
+
+</div>
+
+<script>
+
+function withdraw(){
+
+let wallet=document.getElementById("wallet").value.trim();
+
+let amount=parseFloat(document.getElementById("amount").value);
+
+if(wallet==""){
+
+alert("Entrez votre adresse.");
+
+return;
+
+}
+
+if(isNaN(amount)||amount<1.5){
+
+alert("Minimum retrait : 1.50 USDT");
+
+return;
+
+}
+
+let fee=0.50;
+
+let total=amount+fee;
+
+db.collection("withdraws").add({
+
+uid:auth.currentUser.uid,
+
+wallet:wallet,
+
+amount:amount,
+
+fee:fee,
+
+total:total,
+
+status:"En attente",
+
+date:firebase.firestore.FieldValue.serverTimestamp()
+
+})
+
+.then(()=>{
+
+alert("Demande envoyée avec succès.");
+
+document.getElementById("wallet").value="";
+
+document.getElementById("amount").value="";
+
+})
+
+.catch(error=>{
+
+alert(error.message);
+
+});
+
+}
+
+</script>
+
+</body>
+</html>
