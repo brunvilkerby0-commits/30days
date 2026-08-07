@@ -1,1 +1,249 @@
 
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Thirty Days - Profil</title>
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="dashboard.css">
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+</head>
+
+<body>
+
+<div class="app-container">
+
+  <div class="header">
+    <div>
+      <h1>Thirty Days</h1>
+      <p>Mon Profil</p>
+    </div>
+
+    <a href="index.html" class="back-btn">
+      <i class="fa-solid fa-arrow-left"></i>
+    </a>
+  </div>
+
+
+  <!-- PROFIL -->
+  <div class="card profile-card">
+
+    <div class="profile-icon">
+      <i class="fa-solid fa-user"></i>
+    </div>
+
+    <h2 id="profile-email">Utilisateur</h2>
+
+    <p class="user-id">
+      ID: <span id="user-id">Chargement...</span>
+    </p>
+
+  </div>
+
+
+  <!-- INFORMATIONS DU COMPTE -->
+  <div class="card">
+
+    <div class="section-title">
+      <i class="fa-solid fa-circle-user"></i>
+      <span>Informations du compte</span>
+    </div>
+
+    <div class="profile-row">
+      <span>Solde disponible</span>
+      <strong id="balance">0.00 USDT</strong>
+    </div>
+
+    <div class="profile-row">
+      <span>Date d'inscription</span>
+      <strong id="created-date">--</strong>
+    </div>
+
+    <div class="profile-row">
+      <span>Statut du compte</span>
+      <strong class="status-active">
+        Actif
+      </strong>
+    </div>
+
+  </div>
+
+
+  <!-- ACTIONS -->
+  <div class="card">
+
+    <div class="section-title">
+      <i class="fa-solid fa-gear"></i>
+      <span>Actions</span>
+    </div>
+
+    <a href="deposit.html" class="profile-link">
+      <div>
+        <i class="fa-solid fa-wallet"></i>
+        <span>Effectuer un dépôt</span>
+      </div>
+
+      <i class="fa-solid fa-chevron-right"></i>
+    </a>
+
+    <a href="withdraw.html" class="profile-link">
+      <div>
+        <i class="fa-solid fa-money-bill-transfer"></i>
+        <span>Demander un retrait</span>
+      </div>
+
+      <i class="fa-solid fa-chevron-right"></i>
+    </a>
+
+    <a href="history.html" class="profile-link">
+      <div>
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        <span>Historique</span>
+      </div>
+
+      <i class="fa-solid fa-chevron-right"></i>
+    </a>
+
+    <a href="referral.html" class="profile-link">
+      <div>
+        <i class="fa-solid fa-users"></i>
+        <span>Parrainage</span>
+      </div>
+
+      <i class="fa-solid fa-chevron-right"></i>
+    </a>
+
+  </div>
+
+
+  <!-- DÉCONNEXION -->
+  <div class="card">
+
+    <button
+      class="logout-btn"
+      onclick="logout()"
+    >
+      <i class="fa-solid fa-right-from-bracket"></i>
+      Se déconnecter
+    </button>
+
+  </div>
+
+</div>
+
+
+<script src="firebase.js"></script>
+
+<script>
+
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
+
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  let currentUser = null;
+
+
+  // Vérification utilisateur
+  auth.onAuthStateChanged(async (user) => {
+
+    if (!user) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    currentUser = user;
+
+    document.getElementById("profile-email").innerText =
+      user.email || "Utilisateur Thirty Days";
+
+    document.getElementById("user-id").innerText =
+      user.uid.substring(0, 12) + "...";
+
+
+    try {
+
+      const userDoc = await db
+        .collection("users")
+        .doc(user.uid)
+        .get();
+
+
+      if (userDoc.exists) {
+
+        const data = userDoc.data();
+
+        const balance =
+          Number(data.balance || 0);
+
+        document.getElementById("balance").innerText =
+          balance.toFixed(2) + " USDT";
+
+
+        if (data.createdAt) {
+
+          let date;
+
+          if (data.createdAt.toDate) {
+            date = data.createdAt.toDate();
+          } else {
+            date = new Date(data.createdAt);
+          }
+
+          document.getElementById("created-date").innerText =
+            date.toLocaleDateString("fr-FR");
+
+        }
+
+      }
+
+    } catch (error) {
+
+      console.error(error);
+
+    }
+
+  });
+
+
+  // Déconnexion
+  function logout() {
+
+    const confirmation =
+      confirm("Voulez-vous vraiment vous déconnecter ?");
+
+    if (!confirmation) return;
+
+
+    auth.signOut()
+      .then(() => {
+
+        window.location.href =
+          "login.html";
+
+      })
+      .catch((error) => {
+
+        alert(
+          "Erreur de déconnexion : " +
+          error.message
+        );
+
+      });
+
+  }
+
+</script>
+
+</body>
+</html>
