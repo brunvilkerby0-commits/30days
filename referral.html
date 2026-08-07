@@ -1,1 +1,336 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>Thirty Days - Parrainage</title>
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="dashboard.css">
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+</head>
+
+<body>
+
+<div class="app-container">
+
+  <div class="header">
+    <div>
+      <h1>Thirty Days</h1>
+      <p>Programme de Parrainage</p>
+    </div>
+
+    <a href="index.html" class="back-btn">
+      <i class="fa-solid fa-arrow-left"></i>
+    </a>
+  </div>
+
+
+  <!-- HEADER REFERRAL -->
+  <div class="card referral-hero">
+
+    <div class="referral-icon">
+      <i class="fa-solid fa-users"></i>
+    </div>
+
+    <h2>Invitez vos amis</h2>
+
+    <p>
+      Partagez votre lien personnel et invitez
+      de nouveaux utilisateurs à rejoindre Thirty Days.
+    </p>
+
+  </div>
+
+
+  <!-- LIEN REFERRAL -->
+  <div class="card">
+
+    <div class="section-title">
+      <i class="fa-solid fa-link"></i>
+      <span>Votre lien de parrainage</span>
+    </div>
+
+    <div class="form-group">
+
+      <label>Lien personnel</label>
+
+      <div class="copy-box">
+
+        <input
+          type="text"
+          id="referral-link"
+          readonly
+          value="Génération..."
+        >
+
+        <button onclick="copyReferral()">
+          <i class="fa-solid fa-copy"></i>
+        </button>
+
+      </div>
+
+    </div>
+
+    <button
+      class="btn btn-primary"
+      style="width:100%;"
+      onclick="shareReferral()"
+    >
+      <i class="fa-solid fa-share-nodes"></i>
+      Partager le lien
+    </button>
+
+    <p id="message" class="message"></p>
+
+  </div>
+
+
+  <!-- CODE UTILISATEUR -->
+  <div class="card">
+
+    <div class="section-title">
+      <i class="fa-solid fa-user-tag"></i>
+      <span>Votre code</span>
+    </div>
+
+    <div class="referral-code-box">
+
+      <strong id="referral-code">
+        Chargement...
+      </strong>
+
+      <button onclick="copyCode()">
+        <i class="fa-solid fa-copy"></i>
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- STATISTIQUES -->
+  <div class="card">
+
+    <div class="section-title">
+      <i class="fa-solid fa-chart-simple"></i>
+      <span>Vos statistiques</span>
+    </div>
+
+    <div class="stats-grid">
+
+      <div class="stat-box">
+        <i class="fa-solid fa-user-plus"></i>
+        <strong id="referral-count">0</strong>
+        <span>Filleuls</span>
+      </div>
+
+      <div class="stat-box">
+        <i class="fa-solid fa-coins"></i>
+        <strong id="referral-earnings">0.00</strong>
+        <span>USDT gagnés</span>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- INFORMATION -->
+  <div class="card info-card">
+
+    <i class="fa-solid fa-circle-info"></i>
+
+    <div>
+      <strong>Comment ça marche ?</strong>
+
+      <p>
+        1. Copiez votre lien de parrainage.
+        <br><br>
+        2. Envoyez-le à vos amis.
+        <br><br>
+        3. Lorsqu'ils s'inscrivent avec votre lien,
+        ils sont associés à votre compte.
+      </p>
+    </div>
+
+  </div>
+
+</div>
+
+
+<script src="firebase.js"></script>
+
+<script>
+
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
+
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  let currentUser = null;
+  let referralLink = "";
+  let referralCode = "";
+
+
+  // UTILISATEUR CONNECTÉ
+  auth.onAuthStateChanged(async (user) => {
+
+    if (!user) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    currentUser = user;
+
+    referralCode =
+      user.uid.substring(0, 8).toUpperCase();
+
+    referralLink =
+      window.location.origin +
+      "/register.html?ref=" +
+      referralCode;
+
+
+    document.getElementById("referral-code").innerText =
+      referralCode;
+
+    document.getElementById("referral-link").value =
+      referralLink;
+
+
+    try {
+
+      const userRef =
+        db.collection("users").doc(user.uid);
+
+      const userDoc =
+        await userRef.get();
+
+
+      if (userDoc.exists) {
+
+        const data = userDoc.data();
+
+        document.getElementById("referral-count").innerText =
+          data.referralCount || 0;
+
+        document.getElementById("referral-earnings").innerText =
+          Number(data.referralEarnings || 0).toFixed(2);
+
+      }
+
+    } catch (error) {
+
+      console.error(error);
+
+    }
+
+  });
+
+
+  // COPIER LIEN
+  function copyReferral() {
+
+    const input =
+      document.getElementById("referral-link");
+
+    navigator.clipboard.writeText(
+      input.value
+    ).then(() => {
+
+      showMessage(
+        "Lien de parrainage copié !",
+        "success"
+      );
+
+    }).catch(() => {
+
+      input.select();
+
+      document.execCommand("copy");
+
+      showMessage(
+        "Lien de parrainage copié !",
+        "success"
+      );
+
+    });
+
+  }
+
+
+  // COPIER CODE
+  function copyCode() {
+
+    navigator.clipboard.writeText(
+      referralCode
+    ).then(() => {
+
+      showMessage(
+        "Code de parrainage copié !",
+        "success"
+      );
+
+    });
+
+  }
+
+
+  // PARTAGER
+  async function shareReferral() {
+
+    const text =
+      "Rejoignez Thirty Days avec mon lien de parrainage :\n\n" +
+      referralLink;
+
+
+    if (navigator.share) {
+
+      try {
+
+        await navigator.share({
+          title: "Thirty Days",
+          text: text,
+          url: referralLink
+        });
+
+      } catch (error) {
+
+        console.log(error);
+
+      }
+
+    } else {
+
+      copyReferral();
+
+    }
+
+  }
+
+
+  function showMessage(text, type) {
+
+    const message =
+      document.getElementById("message");
+
+    message.innerText = text;
+
+    message.className =
+      "message " + type;
+
+  }
+
+</script>
+
+</body>
+</html>
